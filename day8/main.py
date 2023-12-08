@@ -47,8 +47,6 @@ def part2(inputfile):
             num_mov += 1
             mov_i += 1
         nums_mov.append(num_mov)
-
-    print(nums_mov)
     gcd = find_gcd(nums_mov[0], nums_mov[1])
     for i in range(2, len(nums_mov)):
         gcd = find_gcd(gcd, nums_mov[i])
@@ -56,18 +54,7 @@ def part2(inputfile):
     val = 1
     for num in nums_mov:
         val = (val * num) / find_gcd(val, num)
-    print(val)
-    #mov_i = 0
-    #num_mov = 0
-    #while not all([x[-1] == 'Z' for x in nodes]):
-    #    if mov_i >= len(movs):
-    #        mov_i = 0
-    #    mov = movs[mov_i]
-    #    nodes = [graph[x][mov] for x in nodes]
-    #    num_mov += 1
-    #    mov_i += 1
-    #print(num_mov)
-    pass
+    return val
     
 if __name__ == '__main__':
     inputfile = open('day8.txt').readlines()
