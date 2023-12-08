@@ -96,7 +96,7 @@ def part2(inputfile):
     return (sum(won))
 
 if __name__ == "__main__":
-    inputfile = open('./day7.txt').readlines()
+    inputfile = open('./day7test.txt').readlines()
     sol1 = part1(inputfile)
     print(f"Solution for part 1: {sol1}")
     sol2 = part2(inputfile)
