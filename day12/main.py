@@ -1,7 +1,4 @@
 import functools
-from operator import itemgetter
-import itertools
-import tqdm
 
 def parsefile(f):
     parsed = []
