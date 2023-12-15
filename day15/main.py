@@ -1,11 +1,7 @@
 memory = {}
 
 def compute_single_value(elem,value):
-    asc = ord(elem)
-    value += asc
-    value = value * 17
-    value = value % 256
-    return value
+    return ((value + ord(elem)) * 17)%256
 
 def compute_value(code,evaluated_code,value):
     if code:
@@ -37,34 +33,32 @@ def part2(inputfile):
     boxes = {}
     steps = inputfile.split(',')
     for step in steps:
-        if '=' in step:
-            step_split = step.split('=')
-            s = step_split[0]
-            box = compute_value(s, '', 0)
-            if box in boxes:
-                same_label = [i for i,x in enumerate(boxes[box]) if x[0] == s]
-                if len(same_label):
-                    boxes[box][same_label[0]] = step_split
-                else:
-                    boxes[box].append(step_split)
-            else:
-                boxes[box] = [step_split]
-        else:
+        if step.endswith("-"):
             step_split = step.split('-')
             s = step_split[0]
             box = compute_value(s, '', 0)
             if box in boxes:
-                i_step_split = [i for i,x in enumerate(boxes[box]) if x[0] == s ]
-                if len(i_step_split):
-                    boxes[box].pop(i_step_split[0])
+                if s in boxes[box]:
+                    del boxes[box][s]
+        else:
+            step_split = step.split('=')
+            s = step_split[0]
+            box = compute_value(s, '', 0)
+            if box in boxes:
+                if s in boxes[box]:
+                    boxes[box][s] = step_split[1]
+                else:
+                    boxes[box][s] = step_split[1]
+            else:
+                boxes[box] = {s:step_split[1]}
     v = 0
     for box in boxes:
         for i, x in enumerate(boxes[box]):
-            v += (box + 1) * (i+1) * int(x[1])
+            v += (box + 1) * (i+1) * int(boxes[box][x])
     return v
 
 if __name__ == '__main__':
-    inputfile = open('day15.txt').read()
+    inputfile = open('day15bigboi.txt').read()
     sol1 = part1(inputfile)
     print(f"Solution for part 1: {sol1}")
     sol2 = part2(inputfile)
