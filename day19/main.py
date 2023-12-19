@@ -53,50 +53,47 @@ def part2(workflows):
                 num,node = data[1].split(':')
                 nodes[step[0]].append((data[0],'higher',int(num),node))
             else:
-                nodes[step[0]].append(('all','else',0,branch))
-    pos = 'in'
-    queue = [(pos, {"x":(1,4000), "m":(1,4000), "a":(1,4000), "s":(1,4000)})]
+                nodes[step[0]].append(('else',branch))
+
+    queue = [('in', {"x":(1,4000), "m":(1,4000), "a":(1,4000), "s":(1,4000)})]
     A = []
-    while queue:
-        x = queue[0]
-        pos = x[0]
-        original = x[1]
-        if pos not in ["A", "R"]:
-            branches = nodes[pos]
-            for branch in branches:
-                if 'else' not in branch:
-                    direction = branch[-1]
-                    tofilter = branch[0]
-                    tmp_part = original.copy()
-                    if branch[1] == 'lower':
-                        tmp_part[tofilter] = (tmp_part[tofilter][0], branch[2]-1)
-                        original[tofilter] = (branch[2], original[tofilter][1])
-                    else:
-                        tmp_part[tofilter] = (branch[2] + 1, tmp_part[tofilter][1])
-                        original[tofilter] = (original[tofilter][1], branch[2])
-                    if direction in ["A", "R"]:
-                        if direction=="A":
-                            A.append(original.copy())
-                    else:
-                        queue.append((direction, tmp_part.copy()))
-        else:
-            if branch[-1] == 'A':
-                A.append(original.copy())
-        queue = queue[1:]
-    print(A)
+    while len(queue) > 0:
+        pos, original = queue.pop()
+        for branch in nodes[pos]:
+            if 'else' not in branch:
+                tofilter, operation, threshold, direction = branch
+                tmp_part = original.copy()
+                if operation == 'lower':
+                    tmp_part[tofilter] = (tmp_part[tofilter][0], threshold-1)
+                    original[tofilter] = (threshold, original[tofilter][1])
+                elif operation == 'higher':
+                    tmp_part[tofilter] = (threshold+1, tmp_part[tofilter][1])
+                    original[tofilter] = (original[tofilter][0], threshold)
+                if direction in ["A", "R"]:
+                    if direction=="A":
+                        A.append(tmp_part.copy())
+                else:
+                    queue.append((direction, tmp_part.copy()))
+            else:
+                direction = branch[-1]
+                if direction in ["A", "R"]:
+                    if direction=="A":
+                        A.append(original.copy())
+                else:
+                    queue.append((direction, original.copy()))
+
     val =0
-    for k in A:
+    for part in A:
         v = 1
-        for j in k:
-            v = v*k[j]
+        for j in part.values():
+            v *= j[1] - j[0]+1
         val += v
-    print(val)
-    return 0
+    return val
 
 if __name__ == '__main__':
     pattern = r'([a-z]*){(.*)}'
     pattern_part = r'([xmas])=([0-9]+)'
-    workflows, parts = open('day19test.txt').read().split('\n\n')
+    workflows, parts = open('day19.txt').read().split('\n\n')
     workflows = workflows.strip().split()
     workflows = [re.search(pattern, workflow).groups() for workflow in workflows]
     workflows = [(x[0],x[1].split(',')) for x in workflows]
