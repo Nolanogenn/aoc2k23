@@ -53,27 +53,45 @@ def part2(workflows):
                 num,node = data[1].split(':')
                 nodes[step[0]].append((data[0],'higher',int(num),node))
             else:
-                nodes[step[0]].append(('else', branch))
+                nodes[step[0]].append(('all','else',0,branch))
     pos = 'in'
-    queue = [(pos, {"x":4000, "m":4000, "a":4000, "s":4000})]
-    v = 0
+    queue = [(pos, {"x":(1,4000), "m":(1,4000), "a":(1,4000), "s":(1,4000)})]
+    A = []
     while queue:
         x = queue[0]
         pos = x[0]
-        ns = x[1]
-        branches = nodes[pos]
-        for branch in branches:
-            filtered = dict(ns)
-            if x[0] != 'else':
-                tofilter = branch[0]
-                direction = branch[-1]
-                filtered[tofilter] = ns[tofilter]-branch[2]
-                new_branch = (direction, branch[2])
-                queue.append(new_branch)
-            else:
-                direction = branch[-1]
-                queue.append((direction, filtered))
-    pass
+        original = x[1]
+        if pos not in ["A", "R"]:
+            branches = nodes[pos]
+            for branch in branches:
+                if 'else' not in branch:
+                    direction = branch[-1]
+                    tofilter = branch[0]
+                    tmp_part = original.copy()
+                    if branch[1] == 'lower':
+                        tmp_part[tofilter] = (tmp_part[tofilter][0], branch[2]-1)
+                        original[tofilter] = (branch[2], original[tofilter][1])
+                    else:
+                        tmp_part[tofilter] = (branch[2] + 1, tmp_part[tofilter][1])
+                        original[tofilter] = (original[tofilter][1], branch[2])
+                    if direction in ["A", "R"]:
+                        if direction=="A":
+                            A.append(original.copy())
+                    else:
+                        queue.append((direction, tmp_part.copy()))
+        else:
+            if branch[-1] == 'A':
+                A.append(original.copy())
+        queue = queue[1:]
+    print(A)
+    val =0
+    for k in A:
+        v = 1
+        for j in k:
+            v = v*k[j]
+        val += v
+    print(val)
+    return 0
 
 if __name__ == '__main__':
     pattern = r'([a-z]*){(.*)}'
