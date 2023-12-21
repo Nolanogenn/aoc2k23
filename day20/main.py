@@ -1,24 +1,27 @@
 def part1(inputfile):
     modules = {
-        x[0]:x[1] for x in inputfile[1:]
+        x[0]:(x[1], x[2]) for x in inputfile[1:]
     }
-    status_dict = {
-        x[0]:'off'  if x[1] == '%' else 'low' for x in inputfile[1:]}
-    status = tuple((
-        x[0],'off')  if x[1] == '%' else (x[0],'low') for x in inputfile[1:])
-    seen = set()
-    seen.add(status)
-    print(seen)
-    queue = [('low', x) for x in inputfile[0][1]]
+    modules['start'] = ('none', inputfile[0][1])
+    status = {
+        k : 'off' for k in modules if modules[k][1][0] == '%'
+    }
+    for module in modules:
+        if modules[module] == '&':
+            connections = [m for m in modules if module in modules[m][1][1]]
+            print(module, connections)
+    
     while queue :
         pulse, directions = queue[0]
-        type_module = modules[direction]
-        if type_module == '%':
-            if pulse == 'high':
-                pass
-            else:
-                if status_dict[direction] == 'off':
-                    new_elem = ('high', direction)
+        for direction in directions:
+            type_module = modules[direction]
+            if type_module == '%':
+                if pulse == 'high':
+                    pass
+                else:
+                    if status_dict[direction] == 'off':
+                        new_elem = ('high', direction)
+                        queue.append(new_elem)
         
     
     pass
